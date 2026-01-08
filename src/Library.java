@@ -1,15 +1,54 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Library {
-    private ArrayList<Book> books;
+    private ArrayList<Book> bookList;        // Maintains display order
+    private HashMap<String, Book> bookMap;   // Fast lookup by ISBN
     private ArrayList<User> users;
     private Scanner scanner;
 
     public Library() {
-        books = new ArrayList<>();
+        bookList = new ArrayList<>();
+        bookMap = new HashMap<>();
         users = new ArrayList<>();
         scanner = new Scanner(System.in);
+    }
+
+    // Add a new book with ISBN validation
+    public void addBook() {
+        System.out.print("Enter book title: ");
+        String title = scanner.nextLine();
+
+        System.out.print("Enter book author: ");
+        String author = scanner.nextLine();
+
+        System.out.print("Enter book ISBN: ");
+        String isbn = scanner.nextLine();
+
+        if (bookMap.containsKey(isbn)) {
+            System.out.println("A book with this ISBN already exists.");
+            return;
+        }
+
+        Book newBook = new Book(title, author, isbn);
+        bookList.add(newBook);
+        bookMap.put(isbn, newBook);
+
+        System.out.println("Book added successfully!");
+    }
+
+    // Display all books with numbering
+    public void displayAllBooks() {
+        if (bookList.isEmpty()) {
+            System.out.println("No books in the library.");
+            return;
+        }
+
+        System.out.println("\n--- All Books ---");
+        for (int i = 0; i < bookList.size(); i++) {
+            System.out.println((i + 1) + ". " + bookList.get(i));
+        }
     }
 
     public void run() {
@@ -23,11 +62,11 @@ public class Library {
             System.out.print("Enter your choice: ");
 
             choice = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // consume newline
 
             switch (choice) {
-                case 1 -> System.out.println("Add book feature coming soon");
-                case 2 -> System.out.println("Display feature coming soon");
+                case 1 -> addBook();
+                case 2 -> displayAllBooks();
                 case 3 -> System.out.println("User registration coming soon");
                 case 4 -> System.out.println("Goodbye!");
                 default -> System.out.println("Invalid choice");
@@ -41,3 +80,4 @@ public class Library {
         new Library().run();
     }
 }
+
