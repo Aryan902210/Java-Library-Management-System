@@ -1,7 +1,7 @@
-# Library Management System (Java)
+# main.java.Library Management System (Java)
 
 ## OVERVIEW
-This is a console based Library Management System implemented in Java.  
+This is a console based main.java.Library Management System implemented in Java.  
 The project simulates core library operations such as managing books, registering users, and handling book borrowing and returns through a menu-driven interface.
 
 The system is designed with a focus on clean object-oriented structure, efficient data handling, and clear separation of responsibilities between classes.
@@ -28,9 +28,9 @@ This project highlights:
 LibraryManagementSystem/
 │
 ├─ src/
-│ ├─ Book.java # Book domain model
-│ ├─ User.java # User domain model
-│ └─ Library.java # Core application logic and menu system
+│ ├─ main.java.Book.java # main.java.Book domain model
+│ ├─ main.java.User.java # main.java.User domain model
+│ └─ main.java.Library.java # Core application logic and menu system
 │
 ├─ README.md # Project documentation
 ```
@@ -39,15 +39,15 @@ LibraryManagementSystem/
 
 ## HOW IT WORKS
 
-### Book Management
+### main.java.Book Management
 
 - Books are stored using:
-    - `ArrayList<Book>` to maintain display order
-    - `HashMap<String, Book>` for fast ISBN-based lookup
+    - `ArrayList<main.java.Book>` to maintain display order
+    - `HashMap<String, main.java.Book>` for fast ISBN-based lookup
 - ISBN validation ensures that duplicate books cannot be added to the system.
 - Each book tracks its availability status.
 
-### User Management
+### main.java.User Management
 
 - Users are registered with a user ID and name.
 - A lookup method is used to retrieve users by ID before borrowing or returning books.
@@ -69,7 +69,7 @@ LibraryManagementSystem/
 
 1. Clone the repository
 2. Open the project in IntelliJ IDEA
-3. Run `Library.java`
+3. Run `main.java.Library.java`
 4. Interact with the system through the console menu
 
 ---
