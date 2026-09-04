@@ -1,6 +1,6 @@
 # main.java.Library Management System (Java)
 
-> **Note:** This repository is currently undergoing a major feature upgrade. Code enhancements and final README documentation will be completed by **September 5, 2026**.
+> **Note:** This repository is currently undergoing a major feature upgrade. Code enhancements and final README documentation will be completed by **September 6, 2026**.
 
 ## OVERVIEW
 This is a console based main.java.Library Management System implemented in Java.  
