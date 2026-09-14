@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS library_db;
+USE library_db;
+
+CREATE TABLE IF NOT EXISTS books (
+    isbn VARCHAR(20) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    is_available BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    user_id VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
