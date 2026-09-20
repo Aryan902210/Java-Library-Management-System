@@ -9,8 +9,13 @@ public class DatabaseConnection {
 
     private static final String CONFIG_FILE = "config.properties";
 
-    // Returns a new connection each time it's called
+    // Default connection - points at the real app database
     public static Connection getConnection() throws SQLException {
+        return getConnection(false);
+    }
+
+    // Pass true to connect to the test database instead
+    public static Connection getConnection(boolean useTestDb) throws SQLException {
         Properties props = new Properties();
         try (FileInputStream input = new FileInputStream(CONFIG_FILE)) {
             props.load(input);
@@ -18,7 +23,7 @@ public class DatabaseConnection {
             throw new SQLException("Could not load " + CONFIG_FILE + ". Did you create it? See config.properties.example.", e);
         }
 
-        String url = props.getProperty("db.url");
+        String url = useTestDb ? props.getProperty("db.test.url") : props.getProperty("db.url");
         String user = props.getProperty("db.user");
         String password = props.getProperty("db.password");
 

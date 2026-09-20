@@ -2,10 +2,23 @@ import java.sql.*;
 
 public class BookDAO {
 
-    // Insert a new book into the database
+    private boolean useTestDb;
+
+    public BookDAO() {
+        this.useTestDb = false;
+    }
+
+    public BookDAO(boolean useTestDb) {
+        this.useTestDb = useTestDb;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DatabaseConnection.getConnection(useTestDb);
+    }
+
     public boolean addBook(Book book) {
         String sql = "INSERT INTO books (isbn, title, author, is_available) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, book.getIsbn());
@@ -21,15 +34,14 @@ public class BookDAO {
         }
     }
 
-    // Check if a book with this ISBN already exists
     public boolean bookExists(String isbn) {
         String sql = "SELECT isbn FROM books WHERE isbn = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, isbn);
             ResultSet rs = stmt.executeQuery();
-            return rs.next(); // true if a row was found
+            return rs.next();
 
         } catch (SQLException e) {
             System.out.println("Error checking book: " + e.getMessage());
@@ -37,10 +49,9 @@ public class BookDAO {
         }
     }
 
-    // Get a single book by ISBN
     public Book getBookByIsbn(String isbn) {
         String sql = "SELECT * FROM books WHERE isbn = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, isbn);
@@ -58,11 +69,10 @@ public class BookDAO {
         }
     }
 
-    // Get all books
     public java.util.List<Book> getAllBooks() {
         java.util.List<Book> books = new java.util.ArrayList<>();
         String sql = "SELECT * FROM books";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -78,10 +88,9 @@ public class BookDAO {
         return books;
     }
 
-    // Update availability status
     public boolean updateAvailability(String isbn, boolean available) {
         String sql = "UPDATE books SET is_available = ? WHERE isbn = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setBoolean(1, available);
@@ -92,6 +101,20 @@ public class BookDAO {
         } catch (SQLException e) {
             System.out.println("Error updating book: " + e.getMessage());
             return false;
+        }
+    }
+
+    // Used by tests to clean up after themselves
+    public void deleteBook(String isbn) {
+        String sql = "DELETE FROM books WHERE isbn = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, isbn);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error deleting book: " + e.getMessage());
         }
     }
 }
