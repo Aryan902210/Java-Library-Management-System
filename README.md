@@ -105,6 +105,9 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL
 );
 ```
+**Entity-Relationship Diagram:**
+
+![ERD](docs/erd.png)
 
 ---
 
