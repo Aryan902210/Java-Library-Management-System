@@ -105,9 +105,9 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL
 );
 ```
-**Entity-Relationship Diagram:**
+**Database Schema:**
 
-![ERD](docs/erd.png)
+![Database Schema](docs/erd.png)
 
 ---
 
