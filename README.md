@@ -45,26 +45,27 @@ This project demonstrates:
 
 ## Project Structure
 
+```text
 LibraryManagementSystem/
+├── src/
+│   ├── main/java/
+│   │   ├── Book.java                 # Book domain model
+│   │   ├── User.java                 # User domain model
+│   │   ├── Library.java              # Menu logic and application entry point
+│   │   ├── DatabaseConnection.java   # Manages JDBC connections (app or test DB)
+│   │   ├── BookDAO.java              # Data access layer for books
+│   │   └── UserDAO.java              # Data access layer for users
+│   │
+│   └── test/java/
+│       ├── BookDAOTest.java          # Tests for BookDAO against a test database
+│       ├── UserDAOTest.java          # Tests for UserDAO against a test database
+│       └── BookTest.java             # Pure unit tests for Book model logic
 │
-├─ src/
-│ ├─ main/java/
-│ │ ├─ Book.java # Book domain model
-│ │ ├─ User.java # User domain model
-│ │ ├─ Library.java # Menu logic and application entry point
-│ │ ├─ DatabaseConnection.java # Manages JDBC connections (app or test DB)
-│ │ ├─ BookDAO.java # Data access layer for books
-│ │ └─ UserDAO.java # Data access layer for users
-│ │
-│ └─ test/java/
-│ ├─ BookDAOTest.java # Tests for BookDAO against a test database
-│ ├─ UserDAOTest.java # Tests for UserDAO against a test database
-│ └─ BookTest.java # Pure unit tests for Book model logic
-│
-├─ schema.sql # SQL script to create both app and test databases
-├─ config.properties.example # Template for local DB configuration
-├─ pom.xml # Maven build file and dependencies
-└─ README.md
+├── schema.sql                        # SQL script to create both app and test databases
+├── config.properties.example         # Template for local DB configuration
+├── pom.xml                           # Maven build file and dependencies
+└── README.md                         # This README file
+```
 
 ---
 
