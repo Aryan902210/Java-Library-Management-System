@@ -1,96 +1,211 @@
-# main.java.Library Management System (Java)
+# Library Management System (Java, MySQL, Maven)
 
-> **Note:** This repository is currently undergoing a major feature upgrade. Code enhancements and final README documentation will be completed by **September 15, 2026**.
+## Overview
 
-## OVERVIEW
-This is a console based main.java.Library Management System implemented in Java.  
-The project simulates core library operations such as managing books, registering users, and handling book borrowing and returns through a menu-driven interface.
+A console-based Library Management System built in Java, using **MySQL** for persistent data storage and **JUnit 5** for automated testing. The system simulates core library operations — managing books, registering users, and handling borrowing/returns — through a menu-driven command-line interface.
 
-The system is designed with a focus on clean object-oriented structure, efficient data handling, and clear separation of responsibilities between classes.
+The project is structured around clean separation of concerns using the **DAO (Data Access Object) pattern**, isolating data persistence logic from application/menu logic. This design makes the storage layer swappable and testable independently of the rest of the application.
 
-This project highlights:
+**Tech stack:** Java 23 · Maven · MySQL 8 · JDBC · JUnit 5
+
+This project demonstrates:
 - Object-Oriented Programming (OOP) principles
-- Use of Java Collections for efficient data management
-- Menu-driven command-line application design
-- Practical use of Git for incremental development
+- Relational database design and integration via JDBC
+- The DAO design pattern for separating business logic from data access
+- Automated testing with JUnit 5, including test database isolation
+- Maven-based dependency management and project structure
+- Secure handling of credentials (kept out of version control)
+- Practical, incremental use of Git for version control
 
 ---
 
-## FEATURES
-- Add and display books in the library
+## Features
+
+- Add and display books in the library, backed by a MySQL database
 - Prevent duplicate books using ISBN validation
 - Register users with unique IDs
-- Borrow and return books with availability tracking
+- Borrow and return books with real-time availability tracking, persisted across sessions
 - Menu-driven command-line interface for user interaction
+- Full JUnit 5 test suite covering data access logic and model behavior, run against an isolated test database
 
 ---
 
-## FILE STRUCTURE
-```
+## Tech Stack
+
+| Layer          | Technology              |
+|----------------|--------------------------|
+| Language       | Java 23                  |
+| Build Tool     | Maven                    |
+| Database       | MySQL 8                  |
+| DB Connectivity| JDBC (`mysql-connector-j`)|
+| Testing        | JUnit 5 (Jupiter)        |
+| IDE            | IntelliJ IDEA            |
+
+---
+
+## Project Structure
+
 LibraryManagementSystem/
 │
 ├─ src/
-│ ├─ main.java.Book.java # main.java.Book domain model
-│ ├─ main.java.User.java # main.java.User domain model
-│ └─ main.java.Library.java # Core application logic and menu system
+│ ├─ main/java/
+│ │ ├─ Book.java # Book domain model
+│ │ ├─ User.java # User domain model
+│ │ ├─ Library.java # Menu logic and application entry point
+│ │ ├─ DatabaseConnection.java # Manages JDBC connections (app or test DB)
+│ │ ├─ BookDAO.java # Data access layer for books
+│ │ └─ UserDAO.java # Data access layer for users
+│ │
+│ └─ test/java/
+│ ├─ BookDAOTest.java # Tests for BookDAO against a test database
+│ ├─ UserDAOTest.java # Tests for UserDAO against a test database
+│ └─ BookTest.java # Pure unit tests for Book model logic
 │
-├─ README.md # Project documentation
+├─ schema.sql # SQL script to create both app and test databases
+├─ config.properties.example # Template for local DB configuration
+├─ pom.xml # Maven build file and dependencies
+└─ README.md
+
+---
+
+## Architecture
+
+### DAO Pattern
+
+The application separates concerns into three layers:
+
+- **Model classes** (`Book`, `User`) — plain data representations, with no knowledge of how or where they're stored.
+- **DAO classes** (`BookDAO`, `UserDAO`) — the only classes that contain SQL and talk to the database, using `PreparedStatement` throughout to prevent SQL injection.
+- **`Library`** — handles the console menu and user interaction, delegating all data operations to the DAOs.
+
+This means the storage mechanism (currently MySQL) could be swapped out in the future without changing any menu or business logic — only the DAO implementations would need to change.
+
+### Database Design
+
+Two databases are used:
+
+- **`library_db`** — the real application database.
+- **`library_test_db`** — a completely separate database used only by the JUnit test suite, so tests never read, write, or interfere with real application data.
+
+Both `BookDAO` and `UserDAO` accept an optional constructor flag to target either database, defaulting to the real one during normal application use.
+
+**Schema:**
+
+```sql
+CREATE TABLE books (
+    isbn VARCHAR(20) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    is_available BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE users (
+    user_id VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
 ```
 
 ---
 
-## HOW IT WORKS
+## How It Works
 
-### main.java.Book Management
+**Book Management**
+- Books are persisted in the `books` table in MySQL, with ISBN as the primary key.
+- ISBN validation (`bookExists`) prevents duplicate entries before insertion.
+- Availability status (`is_available`) is tracked and updated in real time on borrow/return.
 
-- Books are stored using:
-    - `ArrayList<main.java.Book>` to maintain display order
-    - `HashMap<String, main.java.Book>` for fast ISBN-based lookup
-- ISBN validation ensures that duplicate books cannot be added to the system.
-- Each book tracks its availability status.
+**User Management**
+- Users are registered with a unique user ID and name, stored in the `users` table.
+- Users are looked up by ID via `UserDAO` before any borrow/return action is permitted.
 
-### main.java.User Management
-
-- Users are registered with a user ID and name.
-- A lookup method is used to retrieve users by ID before borrowing or returning books.
-
-### Borrowing and Returning
-
+**Borrowing and Returning**
 - A user must be registered before borrowing a book.
-- A book can only be borrowed if it is available.
-- Returning a book updates its availability status accordingly.
+- A book can only be borrowed if `is_available` is `true`.
+- Returning a book updates its availability back to `true`.
+- All state changes are persisted immediately to MySQL — no data is lost between sessions.
 
-### Menu System
-
-- The application runs in a loop and presents a menu for user interaction.
-- Input is handled via the command line using `Scanner`.
-
---- 
-
-## HOW TO RUN
-
-1. Clone the repository
-2. Open the project in IntelliJ IDEA
-3. Run `main.java.Library.java`
-4. Interact with the system through the console menu
+**Menu System**
+- The application runs in a loop, presenting a menu via the console.
+- Input is handled using `Scanner`.
 
 ---
 
-## SKILLS DEMONSTRATED
+## Setup and How to Run
 
-- Java programming fundamentals
-- Object-Oriented Programming (OOP)
-- Java Collections (`ArrayList`, `HashMap`)
-- Input handling with `Scanner`
-- Basic system design and data validation
-- Git version control with incremental commits
+### Prerequisites
+- Java 23 (or adjust `pom.xml` compiler settings to match your installed JDK)
+- Maven (bundled with IntelliJ, or installed separately)
+- MySQL Server 8.x installed and running locally
+
+### 1. Clone the repository
+
+git clone https://github.com/Aryan902210/Java-Library-Management-System.git
+
+### 2. Set up the databases
+Run the provided schema script in MySQL Workbench (or the MySQL CLI) to create both the application and test databases:
+
+mysql -u root -p < schema.sql
+
+Or open `schema.sql` in MySQL Workbench and execute it directly.
+
+### 3. Configure your local database credentials
+Copy the example config file and fill in your own MySQL credentials:
+
+cp config.properties.example config.properties
+
+Edit `config.properties`:
+```properties
+db.url=jdbc:mysql://localhost:3306/library_db
+db.test.url=jdbc:mysql://localhost:3306/library_test_db
+db.user=root
+db.password=your_actual_password
+```
+> `config.properties` is excluded from version control via `.gitignore` — your credentials are never committed.
+
+### 4. Open in IntelliJ IDEA
+Open the project via `pom.xml` ("Open as Maven Project"). Maven will automatically download the required dependencies (MySQL Connector/J, JUnit 5).
+
+### 5. Run the application
+Run `Library.java` (contains the `main` method) and interact with the system through the console menu.
+
+### 6. Run the tests
+Right-click `src/test/java` → **Run All Tests**, or use Maven directly:
+
+mvn test
 
 ---
 
-## FUTURE IMPROVEMENTS
+## Testing
 
-- Persist data using files or a database
-- Add unit tests for core functionality
-- Improve input validation and error handling
-- Implement a graphical user interface (GUI)
+The project includes a JUnit 5 test suite covering:
+
+- **`BookDAOTest`** — add, retrieve, check existence, update availability, and list-all operations against the database
+- **`UserDAOTest`** — add and retrieve operations against the database
+- **`BookTest`** — pure model-level logic (default availability, getters, state changes) with no database dependency
+
+Tests targeting the database use a **separate test database** (`library_test_db`) and JUnit's `@BeforeEach`/`@AfterEach` lifecycle hooks to set up a clean DAO instance and remove test data after every test, ensuring tests are isolated and repeatable.
+
+---
+
+## Skills Demonstrated
+
+- Java programming fundamentals and OOP design
+- Relational database design and SQL (MySQL)
+- JDBC and the DAO design pattern for data access abstraction
+- Writing safe, parameterized SQL queries (`PreparedStatement`) to prevent SQL injection
+- Automated testing with JUnit 5, including test isolation strategies
+- Maven project structure and dependency management
+- Secure credential management (excluding secrets from version control)
+- Git version control with incremental, descriptive commits
+
+---
+
+## Future Improvements
+
+- Add input validation and more robust error handling (e.g. malformed ISBNs, empty fields)
+- Introduce a service layer between `Library` and the DAOs for additional business logic
+- Add mocked unit tests (e.g. with Mockito) alongside the current database-backed tests
+- Implement a GUI or REST API front end
+- Add logging (e.g. via SLF4J) instead of direct console output for error handling
+
 
